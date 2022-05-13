@@ -2,14 +2,6 @@ local buf, win, start_win
 local api = vim.api
 local lsp = vim.lsp
 
-local function split(s, delimiter)
-    result = {};
-    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
-end
-
 local function open()
   if win and api.nvim_win_is_valid(win) then return end
 
@@ -26,8 +18,6 @@ local function open()
   api.nvim_buf_set_option(buf, "bufhidden", "wipe")
   api.nvim_buf_set_option(buf, "filetype", "nvim-docs-view")
 
-  -- api.nvim_win_set_option(win, "wrap", false)
-  
   api.nvim_set_current_win(start_win)
 
   api.nvim_create_autocmd(
