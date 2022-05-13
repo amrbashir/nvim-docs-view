@@ -3,5 +3,5 @@ if exists('g:loaded_docs_view')
 endif
 let g:loaded_docs_view = 1
 
-command! DocsViewOpen lua require("docs-view").open()
+command! DocsViewShow lua require("docs-view").show()
 

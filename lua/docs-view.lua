@@ -2,7 +2,7 @@ local buf, win, start_win
 local api = vim.api
 local lsp = vim.lsp
 
-local function open()
+local function show()
   if win and api.nvim_win_is_valid(win) then return end
 
   start_win = api.nvim_get_current_win()
@@ -45,5 +45,5 @@ local function open()
 end
 
 return {
-  open = open
+  show = show,
 }

@@ -19,7 +19,7 @@ use { 'amrbashir/nvim-docs-view' }
 
 ## Usage
 
-Use `:DocsViewOpen` to open the docs view side panel
+Use `:DocsViewShow` to open the docs view side panel
 
 ## LICENSE
 
