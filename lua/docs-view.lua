@@ -1,13 +1,17 @@
 local M = {}
-
 local config = {
   position = "right",
-  width = 300,
+  width = vim.api.nvim_get_option("columns") / 3
 }
 
 M.setup = function(conf)
-  config.position = conf.position
-  config.width = conf.width
+  if conf.position then
+    config.position = conf.position
+  end
+
+  if conf.width then
+    config.width = conf.width
+  end
 end
 
 local buf, win, start_win
@@ -16,12 +20,16 @@ M.show = function()
 
   start_win = vim.api.nvim_get_current_win()
 
-  vim.api.nvim_command("bot"..config.position.." vnew")
+  if config.position == "left" then
+    vim.api.nvim_command("topleft vnew")
+  else
+    vim.api.nvim_command("botright vnew")
+  end
 
   win = vim.api.nvim_get_current_win()
   buf = vim.api.nvim_get_current_buf()
 
-  vim.api.nvim_win_set_width(win, config.position)
+  vim.api.nvim_win_set_width(win, math.ceil(config.width))
 
   vim.api.nvim_buf_set_name(buf, "Docs View")
   vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
