@@ -1,42 +1,53 @@
+local M = {}
+
+local config = {
+  position = "right",
+  width = 300,
+}
+
+M.setup = function(conf)
+  config.position = conf.position
+  config.width = conf.width
+end
+
 local buf, win, start_win
-local api = vim.api
-local lsp = vim.lsp
+M.show = function()
+  if win and vim.api.nvim_win_is_valid(win) then return end
 
-local function show()
-  if win and api.nvim_win_is_valid(win) then return end
+  start_win = vim.api.nvim_get_current_win()
 
-  start_win = api.nvim_get_current_win()
+  vim.api.nvim_command("bot"..config.position.." vnew")
 
-  api.nvim_command("botright vnew")
+  win = vim.api.nvim_get_current_win()
+  buf = vim.api.nvim_get_current_buf()
 
-  win = api.nvim_get_current_win()
-  buf = api.nvim_get_current_buf()
+  vim.api.nvim_win_set_width(win, config.position)
 
-  api.nvim_buf_set_name(buf, "Docs View")
-  api.nvim_buf_set_option(buf, "buftype", "nofile")
-  api.nvim_buf_set_option(buf, "swapfile", false)
-  api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-  api.nvim_buf_set_option(buf, "filetype", "nvim-docs-view")
+  vim.api.nvim_buf_set_name(buf, "Docs View")
+  vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
+  vim.api.nvim_buf_set_option(buf, "swapfile", false)
+  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  vim.api.nvim_buf_set_option(buf, "filetype", "nvim-docs-view")
 
-  api.nvim_set_current_win(start_win)
+  vim.api.nvim_set_current_win(start_win)
 
-  api.nvim_create_autocmd(
+  vim.api.nvim_create_autocmd(
     { "CursorHold" },
     { pattern = "*", callback = function()
-        local l,c = unpack(api.nvim_win_get_cursor(0))
-        lsp.buf_request(0, "textDocument/hover", { 
-            textDocument = { uri = "file://"..api.nvim_buf_get_name(0) },
+        local l,c = unpack(vim.api.nvim_win_get_cursor(0))
+        vim.lsp.buf_request(0, "textDocument/hover", { 
+            textDocument = { uri = "file://"..vim.api.nvim_buf_get_name(0) },
             position = { line = l - 1, character = c }
         }, function(err, result, ctx, config)
             if not (result and result.contents) then return end
 
-            local md_lines = lsp.util.convert_input_to_markdown_lines(result.contents)
-            md_lines = lsp.util.trim_empty_lines(md_lines)
+            local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+            md_lines = vim.lsp.util.trim_empty_lines(md_lines)
             if vim.tbl_isempty(md_lines) then return end
          
-            api.nvim_buf_set_option(buf, "modifiable", true)
-            lsp.util.stylize_markdown(buf, md_lines)
-            api.nvim_buf_set_option(buf, "modifiable", false)
+            vim.api.nvim_buf_set_option(buf, "modifiable", true)
+            vim.lsp.util.stylize_markdown(buf, md_lines)
+            vim.api.nvim_buf_set_option(buf, "modifiable", false)
           end
         )
       end
@@ -44,6 +55,4 @@ local function show()
   )
 end
 
-return {
-  show = show,
-}
+return M

@@ -9,12 +9,27 @@ Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```viml
 Plug 'amrbashir/nvim-docs-view'
+
+lua << EOF
+  require("docs-view").setup {
+    position = "right",
+    width = 300,
+  }
+EOF
 ```
 
 Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use { 'amrbashir/nvim-docs-view' }
+use {
+  "amrbashir/nvim-docs-view",
+  config = function()
+    require("docs-view").setup {
+      position = "right",
+      width = 300,
+    }
+  end
+}
 ```
 
 ## Usage
