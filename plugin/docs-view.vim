@@ -3,5 +3,5 @@ if exists('g:loaded_docs_view')
 endif
 let g:loaded_docs_view = 1
 
-command! -nargs=0 DocsViewShow lua require("docs-view").show()
+command! -nargs=0 DocsViewToggle lua require("docs-view").toggle()
 
