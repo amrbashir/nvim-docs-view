@@ -1,7 +1,7 @@
 local M = {}
 local config = {
   position = "right",
-  width = vim.api.nvim_get_option("columns") / 3,
+  width = 40,
 }
 
 M.setup = function(conf)
