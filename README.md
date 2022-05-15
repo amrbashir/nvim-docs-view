@@ -5,19 +5,6 @@ A neovim plugin to display lsp hover documentation in a side panel.
 
 ## Installation
 
-Using [vim-plug](https://github.com/junegunn/vim-plug)
-
-```viml
-Plug 'amrbashir/nvim-docs-view', { 'on': 'DocsViewToggle'}
-
-lua << EOF
-  require("docs-view").setup {
-    position = "right",
-    width = 30,
-  }
-EOF
-```
-
 Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
@@ -28,10 +15,23 @@ use {
   config = function()
     require("docs-view").setup {
       position = "right",
-      width = 30,
+      width = vim.api.nvim_get_option("columns") / 3,
     }
   end
 }
+```
+
+Using [vim-plug](https://github.com/junegunn/vim-plug)
+
+```viml
+Plug 'amrbashir/nvim-docs-view', { 'on': 'DocsViewToggle'}
+
+lua << EOF
+  require("docs-view").setup {
+    position = "right",
+    width = vim.api.nvim_get_option("columns") / 3,
+  }
+EOF
 ```
 
 ## Usage

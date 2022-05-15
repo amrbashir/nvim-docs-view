@@ -14,13 +14,12 @@ M.setup = function(conf)
   end
 end
 
-local buf, win, prev_win
+local buf, win, prev_win, autocmd
 M.toggle = function()
   if win and vim.api.nvim_win_is_valid(win) then
     vim.api.nvim_win_close(win, true)
-    win = nil
-    buf = nil
-    prev_win = nil
+    vim.api.nvim_del_autocmd(autocmd)
+    buf, win, prev_win, autocmd = nil
   else
     prev_win = vim.api.nvim_get_current_win()
 
@@ -44,25 +43,30 @@ M.toggle = function()
 
     vim.api.nvim_set_current_win(prev_win)
 
-    vim.api.nvim_create_autocmd(
-      { "CursorHold" },
+    autocmd = vim.api.nvim_create_autocmd(
+      { "CursorHold", "CursorHoldI" },
       { pattern = "*", callback = function()
-          local l,c = unpack(vim.api.nvim_win_get_cursor(0))
-          vim.lsp.buf_request(0, "textDocument/hover", { 
-              textDocument = { uri = "file://"..vim.api.nvim_buf_get_name(0) },
-              position = { line = l - 1, character = c }
-          }, function(err, result, ctx, config)
-              if not (result and result.contents) then return end
-
-              local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-              md_lines = vim.lsp.util.trim_empty_lines(md_lines)
-              if vim.tbl_isempty(md_lines) then return end
+          if win and vim.api.nvim_win_is_valid(win) then
+            local l, c = unpack(vim.api.nvim_win_get_cursor(0))
+            vim.lsp.buf_request(0, "textDocument/hover", { 
+                textDocument = { uri = "file://"..vim.api.nvim_buf_get_name(0) },
+                position = { line = l - 1, character = c }
+            }, function(err, result, ctx, config)
+                if win and vim.api.nvim_win_is_valid(win) and result and result.contents then
+                  local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+                  md_lines = vim.lsp.util.trim_empty_lines(md_lines)
+                  if vim.tbl_isempty(md_lines) then return end
            
-              vim.api.nvim_buf_set_option(buf, "modifiable", true)
-              vim.lsp.util.stylize_markdown(buf, md_lines)
-              vim.api.nvim_buf_set_option(buf, "modifiable", false)
-            end
-          )
+                  vim.api.nvim_buf_set_option(buf, "modifiable", true)
+                  vim.lsp.util.stylize_markdown(buf, md_lines)
+                  vim.api.nvim_buf_set_option(buf, "modifiable", false)
+                end
+              end
+            )
+          else
+            vim.api.nvim_del_autocmd(autocmd)
+            buf, win, prev_win, autocmd = nil
+          end
         end
       }
     )
