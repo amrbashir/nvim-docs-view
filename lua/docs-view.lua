@@ -40,6 +40,7 @@ M.toggle = function()
     vim.api.nvim_buf_set_option(buf, "swapfile", false)
     vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
     vim.api.nvim_buf_set_option(buf, "filetype", "nvim-docs-view")
+    vim.api.nvim_buf_set_option(buf, "buflisted", false)
 
     vim.api.nvim_set_current_win(prev_win)
 

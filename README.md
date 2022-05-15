@@ -13,7 +13,7 @@ Plug 'amrbashir/nvim-docs-view', { 'on': 'DocsViewToggle'}
 lua << EOF
   require("docs-view").setup {
     position = "right",
-    width = 300,
+    width = 30,
   }
 EOF
 ```
@@ -28,7 +28,7 @@ use {
   config = function()
     require("docs-view").setup {
       position = "right",
-      width = 300,
+      width = 30,
     }
   end
 }
