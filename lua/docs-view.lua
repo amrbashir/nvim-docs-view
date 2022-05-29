@@ -1,7 +1,7 @@
 local M = {}
 local config = {
   position = "right",
-  width = 40,
+  width = 60,
 }
 
 M.setup = function(conf)
@@ -17,9 +17,9 @@ end
 local buf, win, prev_win, autocmd
 M.toggle = function()
   if win and vim.api.nvim_win_is_valid(win) then
-    vim.api.nvim_win_close(win, true)
+    vim.api.nvim_win_close(win, false)
     vim.api.nvim_del_autocmd(autocmd)
-    buf, win, prev_win, autocmd = nil
+    buf, win, prev_win, autocmd = nil, nil, nil, nil
   else
     prev_win = vim.api.nvim_get_current_win()
 
@@ -66,7 +66,7 @@ M.toggle = function()
           end)
         else
           vim.api.nvim_del_autocmd(autocmd)
-          buf, win, prev_win, autocmd = nil
+          buf, win, prev_win, autocmd = nil, nil, nil, nil
         end
       end,
     })

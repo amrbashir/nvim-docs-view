@@ -15,7 +15,7 @@ use {
   config = function()
     require("docs-view").setup {
       position = "right",
-      width = vim.api.nvim_get_option("columns") / 3,
+      width = 60,
     }
   end
 }
@@ -29,7 +29,7 @@ Plug 'amrbashir/nvim-docs-view', { 'on': 'DocsViewToggle'}
 lua << EOF
   require("docs-view").setup {
     position = "right",
-    width = vim.api.nvim_get_option("columns") / 3,
+    width = 60,
   }
 EOF
 ```
