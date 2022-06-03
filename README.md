@@ -40,4 +40,4 @@ Use `:DocsViewToggle` to open/close the docs view side panel
 
 ## LICENSE
 
-[MIT](./LICENSE) License © 2021 [Amr Bashir](https://github.com/amrbashir)
+[MIT](./LICENSE) License.
