@@ -1,10 +1,11 @@
 local M = {}
-local config = {
+local default_cfg = {
   position = "right",
+  height = 10,
   width = 60,
 }
-
 local buf, win, prev_win, autocmd
+
 local function toggle()
   if win and vim.api.nvim_win_is_valid(win) then
     vim.api.nvim_win_close(win, false)
@@ -13,16 +14,22 @@ local function toggle()
   else
     prev_win = vim.api.nvim_get_current_win()
 
-    if config.position == "left" then
+    if default_cfg.position == "bottom" then
+      vim.api.nvim_command("bel new")
+      default_cfg["width"] = vim.api.nvim_win_get_width(prev_win)
+    elseif default_cfg.position == "left" then
       vim.api.nvim_command("topleft vnew")
+      default_cfg["height"] = vim.api.nvim_win_get_height(prev_win)
     else
       vim.api.nvim_command("botright vnew")
+      default_cfg["height"] = vim.api.nvim_win_get_height(prev_win)
     end
 
     win = vim.api.nvim_get_current_win()
     buf = vim.api.nvim_get_current_buf()
 
-    vim.api.nvim_win_set_width(win, math.ceil(config.width))
+    vim.api.nvim_win_set_height(win, math.ceil(default_cfg.height))
+    vim.api.nvim_win_set_width(win, math.ceil(default_cfg.width))
 
     vim.api.nvim_buf_set_name(buf, "Docs View")
     vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
@@ -63,13 +70,11 @@ local function toggle()
   end
 end
 
-M.setup = function(conf)
-  if conf.position then
-    config.position = conf.position
-  end
-
-  if conf.width then
-    config.width = conf.width
+M.setup = function(user_cfg)
+  for key, _ in pairs(default_cfg) do
+    if user_cfg[key] then
+      default_cfg[key] = user_cfg[key]
+    end
   end
 
   vim.api.nvim_create_user_command("DocsViewToggle", toggle, { nargs = 0 })
