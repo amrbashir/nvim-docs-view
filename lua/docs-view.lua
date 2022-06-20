@@ -4,18 +4,8 @@ local config = {
   width = 60,
 }
 
-M.setup = function(conf)
-  if conf.position then
-    config.position = conf.position
-  end
-
-  if conf.width then
-    config.width = conf.width
-  end
-end
-
 local buf, win, prev_win, autocmd
-M.toggle = function()
+local function toggle()
   if win and vim.api.nvim_win_is_valid(win) then
     vim.api.nvim_win_close(win, false)
     vim.api.nvim_del_autocmd(autocmd)
@@ -71,6 +61,18 @@ M.toggle = function()
       end,
     })
   end
+end
+
+M.setup = function(conf)
+  if conf.position then
+    config.position = conf.position
+  end
+
+  if conf.width then
+    config.width = conf.width
+  end
+
+  vim.api.nvim_create_user_command("DocsViewToggle", toggle, { nargs = 0 })
 end
 
 return M
