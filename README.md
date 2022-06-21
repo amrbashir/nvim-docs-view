@@ -3,8 +3,7 @@
 A neovim plugin to display lsp hover documentation in a side panel.
 > Inspired by the VSCode extension [Docs View](https://marketplace.visualstudio.com/items?itemName=bierner.docs-view).
 
-
-<img src="demo.png" width="500"/>
+<img alt="doc-view-example" src="demo.gif" width="500" />
 
 ## Installation
 
