@@ -1,9 +1,5 @@
 local M = {}
-local default_cfg = {
-  position = "right",
-  height = 10,
-  width = 60,
-}
+local cfg = {}
 local buf, win, prev_win, autocmd
 
 local function toggle()
@@ -12,24 +8,27 @@ local function toggle()
     vim.api.nvim_del_autocmd(autocmd)
     buf, win, prev_win, autocmd = nil, nil, nil, nil
   else
+    local height = cfg["height"]
+    local width = cfg["width"]
+
     prev_win = vim.api.nvim_get_current_win()
 
-    if default_cfg.position == "bottom" then
+    if cfg.position == "bottom" then
       vim.api.nvim_command("bel new")
-      default_cfg["width"] = vim.api.nvim_win_get_width(prev_win)
-    elseif default_cfg.position == "left" then
+      width = vim.api.nvim_win_get_width(prev_win)
+    elseif cfg.position == "left" then
       vim.api.nvim_command("topleft vnew")
-      default_cfg["height"] = vim.api.nvim_win_get_height(prev_win)
+      height = vim.api.nvim_win_get_height(prev_win)
     else
       vim.api.nvim_command("botright vnew")
-      default_cfg["height"] = vim.api.nvim_win_get_height(prev_win)
+      height = vim.api.nvim_win_get_height(prev_win)
     end
 
     win = vim.api.nvim_get_current_win()
     buf = vim.api.nvim_get_current_buf()
 
-    vim.api.nvim_win_set_height(win, math.ceil(default_cfg.height))
-    vim.api.nvim_win_set_width(win, math.ceil(default_cfg.width))
+    vim.api.nvim_win_set_height(win, math.ceil(height))
+    vim.api.nvim_win_set_width(win, math.ceil(width))
 
     vim.api.nvim_buf_set_name(buf, "Docs View")
     vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
@@ -71,11 +70,13 @@ local function toggle()
 end
 
 M.setup = function(user_cfg)
-  for key, _ in pairs(default_cfg) do
-    if user_cfg[key] then
-      default_cfg[key] = user_cfg[key]
-    end
-  end
+  local default_cfg = {
+    position = "right",
+    height = 10,
+    width = 60,
+  }
+
+  cfg = vim.tbl_extend("force", default_cfg, user_cfg)
 
   vim.api.nvim_create_user_command("DocsViewToggle", toggle, { nargs = 0 })
 end
