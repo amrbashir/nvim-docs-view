@@ -42,4 +42,4 @@ Use `:DocsViewToggle` to open/close the docs view side panel
 
 ## LICENSE
 
-[MIT](./LICENSE) License.
+[MIT](./LICENSE) © Amr Bashir
