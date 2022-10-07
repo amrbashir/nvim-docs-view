@@ -1,6 +1,7 @@
 local M = {}
 local cfg = {}
 local buf, win, prev_win, autocmd
+local get_clients
 
 local function toggle()
   if win and vim.api.nvim_win_is_valid(win) then
@@ -39,10 +40,32 @@ local function toggle()
 
     vim.api.nvim_set_current_win(prev_win)
 
+    if vim.fn.has('nvim-0.8.0') then
+        get_clients = function()
+            return vim.lsp.get_active_clients()
+        end
+    else
+        get_clients = function()
+            return vim.lsp.buf_get_clients(0)
+        end
+    end
+
     autocmd = vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
       pattern = "*",
       callback = function()
         if win and vim.api.nvim_win_is_valid(win) then
+          local clients = get_clients()
+          local gotHover = false
+          for i = 1, #clients do
+            if clients[i].supports_method("textDocument/hover") then
+              gotHover = true
+              break
+            end
+          end
+          if not gotHover then
+            return
+          end
+
           local l, c = unpack(vim.api.nvim_win_get_cursor(0))
           vim.lsp.buf_request(0, "textDocument/hover", {
             textDocument = { uri = "file://" .. vim.api.nvim_buf_get_name(0) },
