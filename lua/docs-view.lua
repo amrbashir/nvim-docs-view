@@ -43,14 +43,14 @@ local function toggle()
 
     vim.api.nvim_set_current_win(prev_win)
 
-    if vim.fn.has('nvim-0.8.0') then
-        get_clients = function()
-            return vim.lsp.get_active_clients()
-        end
+    if vim.fn.has("nvim-0.8.0") then
+      get_clients = function()
+        return vim.lsp.get_active_clients()
+      end
     else
-        get_clients = function()
-            return vim.lsp.buf_get_clients(0)
-        end
+      get_clients = function()
+        return vim.lsp.buf_get_clients(0)
+      end
     end
 
     autocmd = vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
