@@ -38,7 +38,7 @@ EOF
 
 ## Usage
 
-Use `:DocsViewToggle` to open/close the docs view side panel
+Use `:DocsViewToggle` to open/close the docs view panel
 
 ## LICENSE
 
