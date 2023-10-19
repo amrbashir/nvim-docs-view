@@ -33,6 +33,7 @@ local function update()
       end
 
       vim.api.nvim_buf_set_option(buf, "modifiable", true)
+      vim.api.nvim_buf_set_lines(buf, 0, -1, true, {})
       vim.lsp.util.stylize_markdown(buf, md_lines)
       vim.api.nvim_buf_set_option(buf, "modifiable", false)
     end
