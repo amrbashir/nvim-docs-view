@@ -45,7 +45,7 @@ EOF
   - default: `right`
   - possible: `right` | `left` | `top` | `bottom`
 - `height`:
-  - description: Hieght of the docs view panel when position is set to `top` or `bottom`
+  - description: Height of the docs view panel when position is set to `top` or `bottom`
   - type: `number`
   - default: `10`
 - `width`:
