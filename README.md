@@ -37,6 +37,19 @@ lua << EOF
 EOF
 ```
 
+Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+```lua
+{
+  "amrbashir/nvim-docs-view",
+  lazy = true,
+  cmd = "DocsViewToggle",
+  opts = {
+    position = "right",
+    width = 60
+  }
+}
+```
+
 ## Options
 
 - `position`:
