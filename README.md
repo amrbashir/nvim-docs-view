@@ -1,3 +1,5 @@
+[![StandWithPalestine](https://raw.githubusercontent.com/Safouene1/support-palestine-banner/master/StandWithPalestine.svg)](https://techforpalestine.org/learn-more)
+
 # nvim-docs-view
 
 A neovim plugin to display lsp hover documentation in a side panel.
