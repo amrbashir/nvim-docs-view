@@ -3,9 +3,9 @@ local cfg = {}
 local buf, win, prev_win, autocmd
 local get_clients
 
-local function update()
+M.update = function()
   if not win or not vim.api.nvim_win_is_valid(win) then
-    toggle()
+    M.toggle()
   end
 
   local clients = get_clients()
@@ -40,7 +40,7 @@ local function update()
   end)
 end
 
-local function toggle()
+M.toggle = function()
   if win and vim.api.nvim_win_is_valid(win) then
     vim.api.nvim_win_close(win, false)
     if autocmd then
@@ -91,7 +91,7 @@ local function toggle()
         pattern = "*",
         callback = function()
           if win and vim.api.nvim_win_is_valid(win) then
-            update()
+            M.update()
           else
             vim.api.nvim_del_autocmd(autocmd)
             buf, win, prev_win, autocmd = nil, nil, nil, nil
@@ -122,8 +122,8 @@ M.setup = function(user_cfg)
     end
   end
 
-  vim.api.nvim_create_user_command("DocsViewToggle", toggle, { nargs = 0 })
-  vim.api.nvim_create_user_command("DocsViewUpdate", update, { nargs = 0 })
+  vim.api.nvim_create_user_command("DocsViewToggle", M.toggle, { nargs = 0 })
+  vim.api.nvim_create_user_command("DocsViewUpdate", M.update, { nargs = 0 })
 end
 
 return M
