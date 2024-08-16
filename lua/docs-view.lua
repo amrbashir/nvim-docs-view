@@ -5,7 +5,7 @@ local get_clients
 
 M.update = function()
   if not win or not vim.api.nvim_win_is_valid(win) then
-    toggle()
+    M.toggle()
   end
 
   local clients = get_clients()
@@ -91,7 +91,7 @@ M.toggle = function()
         pattern = "*",
         callback = function()
           if win and vim.api.nvim_win_is_valid(win) then
-            update()
+            M.update()
           else
             vim.api.nvim_del_autocmd(autocmd)
             buf, win, prev_win, autocmd = nil, nil, nil, nil
