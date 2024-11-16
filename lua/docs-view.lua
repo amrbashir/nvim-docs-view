@@ -74,7 +74,9 @@ M.toggle = function()
     win = vim.api.nvim_get_current_win()
     buf = vim.api.nvim_get_current_buf()
 
-    vim.api.nvim_win_set_height(win, math.ceil(height))
+    if cfg.position == "bottom" or cfg.position == "top" then
+        vim.api.nvim_win_set_height(win, math.ceil(height))
+    end
     vim.api.nvim_win_set_width(win, math.ceil(width))
 
     vim.api.nvim_buf_set_name(buf, "Docs View")
