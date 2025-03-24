@@ -73,7 +73,7 @@ M.toggle = function()
     buf = vim.api.nvim_get_current_buf()
 
     if cfg.position == "bottom" or cfg.position == "top" then
-        vim.api.nvim_win_set_height(win, math.ceil(height))
+      vim.api.nvim_win_set_height(win, math.ceil(height))
     end
     vim.api.nvim_win_set_width(win, math.ceil(width))
 
