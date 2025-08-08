@@ -27,7 +27,7 @@ M.update = function()
   }, function(err, result, ctx, config)
     if win and vim.api.nvim_win_is_valid(win) and result and result.contents then
       local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-      md_lines = vim.lsp.util.trim_empty_lines(md_lines)
+      --md_lines = vim.lsp.util.trim_empty_lines(md_lines)
       if vim.tbl_isempty(md_lines) then
         return
       end
@@ -112,7 +112,11 @@ M.setup = function(user_cfg)
 
   cfg = vim.tbl_extend("force", default_cfg, user_cfg)
 
-  if vim.fn.has("nvim-0.8.0") then
+  if vim.fn.has("nvim-0.11.0") then
+    get_clients = function()
+      return vim.lsp.get_clients()
+    end
+  elseif vim.fn.has("nvim-0.8.0") then
     get_clients = function()
       return vim.lsp.get_active_clients()
     end
