@@ -57,6 +57,14 @@ M.toggle = function()
 
     prev_win = vim.api.nvim_get_current_win()
 
+    -- wipe stale plugin buffers (e.g. left over from a session restore)
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+      local bname = vim.api.nvim_buf_get_name(b)
+      if bname:match("%[Docs View%]$") then
+        vim.api.nvim_buf_delete(b, { force = true })
+      end
+    end
+
     if cfg.position == "bottom" then
       vim.api.nvim_command("bel new")
       width = vim.api.nvim_win_get_width(prev_win)
@@ -77,7 +85,7 @@ M.toggle = function()
     end
     vim.api.nvim_win_set_width(win, math.ceil(width))
 
-    vim.api.nvim_buf_set_name(buf, "Docs View")
+    vim.api.nvim_buf_set_name(buf, "[Docs View]")
     vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
     vim.api.nvim_buf_set_option(buf, "swapfile", false)
     vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
