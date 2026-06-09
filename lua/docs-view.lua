@@ -33,7 +33,7 @@ M.update = function()
       end
 
       vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-      vim.api.nvim_buf_set_lines(buf, 0, -1, true, {})
+      vim.api.nvim_buf_set_lines(buf, 0, -1, true, md_lines)
       pcall(vim.treesitter.start, buf, "markdown")
       vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
     end
