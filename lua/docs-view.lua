@@ -70,7 +70,7 @@ M.toggle = function()
       width = vim.api.nvim_win_get_width(prev_win)
     elseif cfg.position == "top" then
       vim.api.nvim_command("top new")
-      width = vim.api.nvim_win_get_height(prev_win)
+      width = vim.api.nvim_win_get_width(prev_win)
     elseif cfg.position == "left" then
       vim.api.nvim_command("topleft vnew")
     else
