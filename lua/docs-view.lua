@@ -66,11 +66,9 @@ M.toggle = function()
     end
 
     if cfg.position == "bottom" then
-      vim.api.nvim_command("bel new")
-      width = vim.api.nvim_win_get_width(prev_win)
+      vim.api.nvim_command("botright new")
     elseif cfg.position == "top" then
-      vim.api.nvim_command("top new")
-      width = vim.api.nvim_win_get_height(prev_win)
+      vim.api.nvim_command("topleft new")
     elseif cfg.position == "left" then
       vim.api.nvim_command("topleft vnew")
     else
@@ -82,8 +80,9 @@ M.toggle = function()
 
     if cfg.position == "bottom" or cfg.position == "top" then
       vim.api.nvim_win_set_height(win, math.ceil(height))
+    else
+      vim.api.nvim_win_set_width(win, math.ceil(width))
     end
-    vim.api.nvim_win_set_width(win, math.ceil(width))
 
     vim.api.nvim_buf_set_name(buf, "[Docs View]")
     vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
