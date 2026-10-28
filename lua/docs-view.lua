@@ -4,140 +4,139 @@ local buf, win, prev_win, autocmd
 local get_clients
 
 M.update = function()
-  if not win or not vim.api.nvim_win_is_valid(win) then
-    M.toggle()
-  end
+	if not win or not vim.api.nvim_win_is_valid(win) then
+		M.toggle()
+	end
 
-  local clients = get_clients()
-  local gotHover = false
-  for i = 1, #clients do
-    if clients[i].supports_method("textDocument/hover") then
-      gotHover = true
-      break
-    end
-  end
-  if not gotHover then
-    return
-  end
+	local clients = get_clients()
+	local gotHover = false
+	for i = 1, #clients do
+		if clients[i].supports_method("textDocument/hover") then
+			gotHover = true
+			break
+		end
+	end
+	if not gotHover then
+		return
+	end
 
-  local l, c = unpack(vim.api.nvim_win_get_cursor(0))
-  vim.lsp.buf_request(0, "textDocument/hover", {
-    textDocument = { uri = "file://" .. vim.api.nvim_buf_get_name(0) },
-    position = { line = l - 1, character = c },
-  }, function(err, result, ctx)
-    if win and vim.api.nvim_win_is_valid(win) and result and result.contents then
-      local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-      --md_lines = vim.lsp.util.trim_empty_lines(md_lines)
-      if vim.tbl_isempty(md_lines) then
-        return
-      end
+	local l, c = unpack(vim.api.nvim_win_get_cursor(0))
+	vim.lsp.buf_request(0, "textDocument/hover", {
+		textDocument = { uri = "file://" .. vim.api.nvim_buf_get_name(0) },
+		position = { line = l - 1, character = c },
+	}, function(err, result, ctx)
+		if win and vim.api.nvim_win_is_valid(win) and result and result.contents then
+			local md_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+			--md_lines = vim.lsp.util.trim_empty_lines(md_lines)
+			if vim.tbl_isempty(md_lines) then
+				return
+			end
 
-      vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-      vim.api.nvim_buf_set_lines(buf, 0, -1, true, md_lines)
-      pcall(vim.treesitter.start, buf, "markdown")
-      vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
-    end
-  end)
+			vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+			vim.api.nvim_buf_set_lines(buf, 0, -1, true, md_lines)
+			pcall(vim.treesitter.start, buf, "markdown")
+			vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+		end
+	end)
 end
 
 M.toggle = function()
-  if win and vim.api.nvim_win_is_valid(win) then
-    vim.api.nvim_win_close(win, false)
-    if autocmd then
-      vim.api.nvim_del_autocmd(autocmd)
-    end
-    buf, win, prev_win, autocmd = nil, nil, nil, nil
-  else
-    local height = cfg["height"]
-    local width = cfg["width"]
-    local update_mode = cfg["update_mode"]
-    if update_mode ~= "manual" then
-      update_mode = "auto"
-    end
+	if win and vim.api.nvim_win_is_valid(win) then
+		vim.api.nvim_win_close(win, false)
+		if autocmd then
+			vim.api.nvim_del_autocmd(autocmd)
+		end
+		buf, win, prev_win, autocmd = nil, nil, nil, nil
+	else
+		local height = cfg["height"]
+		local width = cfg["width"]
+		local update_mode = cfg["update_mode"]
+		if update_mode ~= "manual" then
+			update_mode = "auto"
+		end
 
-    prev_win = vim.api.nvim_get_current_win()
+		prev_win = vim.api.nvim_get_current_win()
 
-    -- wipe stale plugin buffers (e.g. left over from a session restore)
-    for _, b in ipairs(vim.api.nvim_list_bufs()) do
-      local bname = vim.api.nvim_buf_get_name(b)
-      if bname:match("%[Docs View%]$") then
-        vim.api.nvim_buf_delete(b, { force = true })
-      end
-    end
+		-- wipe stale plugin buffers (e.g. left over from a session restore)
+		for _, b in ipairs(vim.api.nvim_list_bufs()) do
+			local bname = vim.api.nvim_buf_get_name(b)
+			if bname:match("%[Docs View%]$") then
+				vim.api.nvim_buf_delete(b, { force = true })
+			end
+		end
 
-    if cfg.position == "bottom" then
-      vim.api.nvim_command("bel new")
-      width = vim.api.nvim_win_get_width(prev_win)
-    elseif cfg.position == "top" then
-      vim.api.nvim_command("top new")
-      width = vim.api.nvim_win_get_height(prev_win)
-    elseif cfg.position == "left" then
-      vim.api.nvim_command("topleft vnew")
-    else
-      vim.api.nvim_command("botright vnew")
-    end
+		if cfg.position == "bottom" then
+			vim.api.nvim_command("botright new")
+		elseif cfg.position == "top" then
+			vim.api.nvim_command("topleft new")
+		elseif cfg.position == "left" then
+			vim.api.nvim_command("topleft vnew")
+		else
+			vim.api.nvim_command("botright vnew")
+		end
 
-    win = vim.api.nvim_get_current_win()
-    buf = vim.api.nvim_get_current_buf()
+		win = vim.api.nvim_get_current_win()
+		buf = vim.api.nvim_get_current_buf()
 
-    if cfg.position == "bottom" or cfg.position == "top" then
-      vim.api.nvim_win_set_height(win, math.ceil(height))
-    end
-    vim.api.nvim_win_set_width(win, math.ceil(width))
+		if cfg.position == "bottom" or cfg.position == "top" then
+			vim.api.nvim_win_set_height(win, math.ceil(height))
+		else
+			vim.api.nvim_win_set_width(win, math.ceil(width))
+		end
 
-    vim.api.nvim_buf_set_name(buf, "[Docs View]")
-    vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-    vim.api.nvim_set_option_value("swapfile", false, { buf = buf })
-    vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
-    vim.api.nvim_set_option_value("filetype", "nvim-docs-view", { buf = buf })
-    vim.api.nvim_set_option_value("buflisted", false, { buf = buf })
-    vim.api.nvim_set_option_value("conceallevel", 2, { win = win })
-    vim.api.nvim_set_option_value("concealcursor", "nc", { win = win })
+		vim.api.nvim_buf_set_name(buf, "[Docs View]")
+		vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+		vim.api.nvim_set_option_value("swapfile", false, { buf = buf })
+		vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
+		vim.api.nvim_set_option_value("filetype", "nvim-docs-view", { buf = buf })
+		vim.api.nvim_set_option_value("buflisted", false, { buf = buf })
+		vim.api.nvim_set_option_value("conceallevel", 2, { win = win })
+		vim.api.nvim_set_option_value("concealcursor", "nc", { win = win })
 
-    vim.api.nvim_set_current_win(prev_win)
+		vim.api.nvim_set_current_win(prev_win)
 
-    if update_mode == "auto" then
-      autocmd = vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-        pattern = "*",
-        callback = function()
-          if win and vim.api.nvim_win_is_valid(win) then
-            M.update()
-          else
-            vim.api.nvim_del_autocmd(autocmd)
-            buf, win, prev_win, autocmd = nil, nil, nil, nil
-          end
-        end,
-      })
-    end
-  end
+		if update_mode == "auto" then
+			autocmd = vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+				pattern = "*",
+				callback = function()
+					if win and vim.api.nvim_win_is_valid(win) then
+						M.update()
+					else
+						vim.api.nvim_del_autocmd(autocmd)
+						buf, win, prev_win, autocmd = nil, nil, nil, nil
+					end
+				end,
+			})
+		end
+	end
 end
 
 M.setup = function(user_cfg)
-  local default_cfg = {
-    position = "right",
-    height = 10,
-    width = 60,
-    update_mode = "auto",
-  }
+	local default_cfg = {
+		position = "right",
+		height = 10,
+		width = 60,
+		update_mode = "auto",
+	}
 
-  cfg = vim.tbl_extend("force", default_cfg, user_cfg)
+	cfg = vim.tbl_extend("force", default_cfg, user_cfg)
 
-  if vim.fn.has("nvim-0.11.0") then
-    get_clients = function()
-      return vim.lsp.get_clients()
-    end
-  elseif vim.fn.has("nvim-0.8.0") then
-    get_clients = function()
-      return vim.lsp.get_clients()
-    end
-  else
-    get_clients = function()
-      return vim.lsp.get_clients({ bufnr = 0 })
-    end
-  end
+	if vim.fn.has("nvim-0.10.0") == 1 then
+		get_clients = function()
+			return vim.lsp.get_clients()
+		end
+	elseif vim.fn.has("nvim-0.8.0") == 1 then
+		get_clients = function()
+			return vim.lsp.get_active_clients()
+		end
+	else
+		get_clients = function()
+			return vim.lsp.buf_get_clients(0)
+		end
+	end
 
-  vim.api.nvim_create_user_command("DocsViewToggle", M.toggle, { nargs = 0 })
-  vim.api.nvim_create_user_command("DocsViewUpdate", M.update, { nargs = 0 })
+	vim.api.nvim_create_user_command("DocsViewToggle", M.toggle, { nargs = 0 })
+	vim.api.nvim_create_user_command("DocsViewUpdate", M.update, { nargs = 0 })
 end
 
 return M
