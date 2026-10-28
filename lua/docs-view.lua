@@ -32,10 +32,10 @@ M.update = function()
 				return
 			end
 
-			vim.api.nvim_buf_set_option(buf, "modifiable", true)
-			vim.api.nvim_buf_set_lines(buf, 0, -1, true, {})
-			vim.lsp.util.stylize_markdown(buf, md_lines)
-			vim.api.nvim_buf_set_option(buf, "modifiable", false)
+			vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+			vim.api.nvim_buf_set_lines(buf, 0, -1, true, md_lines)
+			pcall(vim.treesitter.start, buf, "markdown")
+			vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 		end
 	end)
 end
@@ -85,13 +85,13 @@ M.toggle = function()
 		end
 
 		vim.api.nvim_buf_set_name(buf, "[Docs View]")
-		vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
-		vim.api.nvim_buf_set_option(buf, "swapfile", false)
-		vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-		vim.api.nvim_buf_set_option(buf, "filetype", "nvim-docs-view")
-		vim.api.nvim_buf_set_option(buf, "buflisted", false)
-		vim.api.nvim_win_set_option(win, "conceallevel", 2)
-		vim.api.nvim_win_set_option(win, "concealcursor", "nc")
+		vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+		vim.api.nvim_set_option_value("swapfile", false, { buf = buf })
+		vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
+		vim.api.nvim_set_option_value("filetype", "nvim-docs-view", { buf = buf })
+		vim.api.nvim_set_option_value("buflisted", false, { buf = buf })
+		vim.api.nvim_set_option_value("conceallevel", 2, { win = win })
+		vim.api.nvim_set_option_value("concealcursor", "nc", { win = win })
 
 		vim.api.nvim_set_current_win(prev_win)
 
@@ -121,11 +121,11 @@ M.setup = function(user_cfg)
 
 	cfg = vim.tbl_extend("force", default_cfg, user_cfg)
 
-	if vim.fn.has("nvim-0.11.0") then
+	if vim.fn.has("nvim-0.10.0") == 1 then
 		get_clients = function()
 			return vim.lsp.get_clients()
 		end
-	elseif vim.fn.has("nvim-0.8.0") then
+	elseif vim.fn.has("nvim-0.8.0") == 1 then
 		get_clients = function()
 			return vim.lsp.get_active_clients()
 		end
